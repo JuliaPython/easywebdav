@@ -1,0 +1,11 @@
+[webdav]
+
+epoch_delta = 3600
+
+[repository]
+
+name = easywebdav
+local_path = ../easywebdav
+remote_path = /easywebdav
+auto_scan = 1
+#working_copy_wakeup = True

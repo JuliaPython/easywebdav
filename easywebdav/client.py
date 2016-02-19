@@ -15,7 +15,7 @@ else:
     from http.client import responses as HTTP_CODES
     from urllib.parse import urlparse
     from urllib.parse import urlsplit
-    
+
 DOWNLOAD_CHUNK_SIZE_BYTES = 1 * 1024 * 1024
 
 AUTH_MODE_BASIC = 'basic'
@@ -43,21 +43,21 @@ def prop(elem, name, default=None):
 
 
 def elem2file(elem):
-  
+
     href = prop(elem, 'href')
     url_parts = urlsplit(href)
     path = url_parts.path
 
-    # remove trailing slashes    
+    # remove trailing slashes
     if path[-1] == '/':
       path = path[0:len(path)-1]
-      
+
     content_type = prop(elem, 'getcontenttype', '')
     content_length = prop(elem, 'getcontentlength')
-    
+
     # Try to detect directories...
     is_dir = (content_type == CONTENT_TYPE_DIRECTORY) or content_length == None
-    
+
     return File(
         path,
         int(prop(elem, 'getcontentlength', 0)),
@@ -104,7 +104,7 @@ class Client(object):
         self.baseurl = '{0}://{1}:{2}'.format(protocol, host, port)
         if path:
             self.baseurl = '{0}/{1}'.format(self.baseurl, path)
-          
+
         self.cwd = '/'
         self.session = requests.session()
         self.session.verify = verify_ssl
@@ -119,7 +119,7 @@ class Client(object):
           if auth_mode == AUTH_MODE_DIGEST:
             self.session.auth = requests.auth.HTTPDigestAuth(username, password)
           else:
-            self.session.auth = (username, password)          
+            self.session.auth = (username, password)
 
     def _send(self, method, path, expected_code, **kwargs):
         url = self._get_url(path)
@@ -179,7 +179,7 @@ class Client(object):
         self._send('DELETE', path, 204)
 
     def upload(self, local_path_or_fileobj, remote_path):
-        if isinstance(local_path_or_fileobj, basestring):
+        if isinstance(local_path_or_fileobj, str):
             with open(local_path_or_fileobj, 'rb') as f:
                 self._upload(f, remote_path)
         else:
@@ -190,7 +190,7 @@ class Client(object):
 
     def download(self, remote_path, local_path_or_fileobj):
         response = self._send('GET', remote_path, 200, stream=True)
-        if isinstance(local_path_or_fileobj, basestring):
+        if isinstance(local_path_or_fileobj, str):
             with open(local_path_or_fileobj, 'wb') as f:
                 self._download(f, response)
         else:
@@ -215,4 +215,3 @@ class Client(object):
     def exists(self, remote_path):
         response = self._send('HEAD', remote_path, (200, 301, 404))
         return True if response.status_code != 404 else False
-        
